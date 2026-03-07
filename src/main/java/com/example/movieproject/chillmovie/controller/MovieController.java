@@ -2,13 +2,19 @@ package com.example.movieproject.chillmovie.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.movieproject.chillmovie.entity.Movie;
 import com.example.movieproject.chillmovie.service.MovieService;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 public class MovieController {
@@ -19,18 +25,39 @@ public class MovieController {
     }
 
     @GetMapping("/movies")
-    public List<Movie> getAllMovies() {
+    public ResponseEntity<List<Movie>> getAllMovies() {
         List<Movie> movies = movieService.getAllMovies();
-        return movies;
+        return ResponseEntity.status(HttpStatus.OK).body(movies);
     }
 
-    @PostMapping("/movie/create")
-    public void createMovie(
+    @PostMapping("/movies")
+    public ResponseEntity<Movie> createMovie(
             @RequestBody Movie postManMovie) {
 
-        this.movieService.createMovie(postManMovie);
-        System.err.println("Movie created successfully: " + postManMovie.getTitle());
+        Movie createdMovie = this.movieService.createMovie(postManMovie);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdMovie);
 
+    }
+
+    @DeleteMapping("/movies/{id}")
+    public ResponseEntity<String> deleteMovie(@PathVariable Long id) {
+        movieService.deleteMovie(id);
+        // return ResponseEntity.status(HttpStatus.OK).body("Movie deleted
+        // successfully");
+        return ResponseEntity.ok("Movie deleted successfully");
+
+    }
+
+    @GetMapping("movies/{id}")
+    public ResponseEntity<Movie> getMovieByID(@PathVariable Long id) {
+        Movie movie = movieService.getMovieByID(id);
+        return ResponseEntity.status(HttpStatus.OK).body(movie);
+    }
+
+    @PutMapping("/movies/{id}")
+    public ResponseEntity<Movie> updateMovie(@PathVariable Long id, @RequestBody Movie movie) {
+        Movie updatedMovie = movieService.updateMovie(id, movie);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedMovie);
     }
 
 }
